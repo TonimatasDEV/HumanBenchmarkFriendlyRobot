@@ -21,26 +21,54 @@ public class Screen {
     }
     
     public static Bound getBlueArea(Robot robot) {
+        System.out.println("Detecting area...");
         Dimension screenDimension = getScreenDimension();
-        
-        boolean firstSet = false;
+
         Point upperLeft = null;
         Point lowerRight = null;
-        for (int i = 0; i < screenDimension.width; i++) {
-            for (int j = 0; j < screenDimension.height; j++) {
-                if (robot.getPixelColor(i, j) == BLUE) {
-                    if (!firstSet) {
-                        upperLeft = new Point(i, j);
+
+        for (int y = 0; y < screenDimension.height; y++) {
+            Color color = robot.getPixelColor(0, y);
+            if (color.equals(BLUE)) {
+                upperLeft = new Point(0, y);
+                break;
+            }
+        }
+
+        boolean isLast = true;
+        for (int y = 0; y < screenDimension.height; y++) {
+            Color color = robot.getPixelColor(0, y);
+            robot.mouseMove(0, y);
+            if (color.equals(BLUE)) {
+                lowerRight = new Point(0, y);
+                isLast = false;
+            } else {
+                if (!isLast) {
+                    isLast = true;
+                    for (int x = 0; x < screenDimension.width; x++) {
+                        Color color1 = robot.getPixelColor(0, y);
+
+                        robot.mouseMove(x, y - 1);
+                        if (color1.equals(BLUE)) {
+                            lowerRight = new Point(x, y);
+                            isLast = false;
+                        } else {
+                            if (!isLast) {
+                                break;
+                            }
+                        }
+                        
                     }
                     
-                    lowerRight = new Point(i, j);
+                    break;
                 }
             }
         }
         
-        if (upperLeft == null) {
+        if (upperLeft == null || lowerRight == null) {
             return null;
         } else {
+            System.out.println("Area detected successfully");
             return new Bound(upperLeft, lowerRight);
         }
     }
