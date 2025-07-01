@@ -29,9 +29,7 @@ public class Main {
             case "6" -> new Typing().run();
             case "7" -> new VerbalMemory().run();
             case "8" -> new VisualMemory().run();
-            default -> {
-                System.out.println("Invalid trainer");
-            }
+            default -> System.out.println("Invalid trainer");
         }
     }
 }
